@@ -216,8 +216,17 @@ function getUserCoordinates(){
         let {latitude, longitude} = position.coords;
         let REVERSE_GEOCODING_URL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit={limit}&appid=${api_key}`; 
         
-        fetch(REVERSE_GEOCODING_URL)
-    });
+        fetch(REVERSE_GEOCODING_URL).then(res => res.json()).then(data => {
+            let {name, country, state} = data[0];
+            getWeatherDetails(name, latitude, longitude, country, state);
+        }).catch(() => {
+            alert('Failed to fetch user coordinates');
+        });
+    }, error => {
+        if(error.code === error.PERMISSION_DENIED){
+            alert('Geolocation permission denied. Please reset location permission to grant access again');
+        }
+    }); 
 }
 
 searchBtn.addEventListener('click', getCityCoordinates);
